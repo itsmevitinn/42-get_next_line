@@ -18,7 +18,8 @@
 char	*get_next_line(int fd)
 {
 	char	*buffer_read;
-	if(fd == -1)
+	static	char	*stash;
+	if(fd < 0)
 	{
 		printf("Failed to read the file");
 		return (NULL);
