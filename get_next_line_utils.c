@@ -1,7 +1,7 @@
 #include "get_next_line.h"
 //looks for a newline in the given linked listg
 
-int	found_new_line(t_list	*stash)
+int	found_newline(t_list	*stash)
 {
 	int i;
 	t_list	*current;
@@ -10,7 +10,7 @@ int	found_new_line(t_list	*stash)
 	i = 0;
 	if (stash == NULL)
 		return (0);
-	while (current->string[i] != '\0')
+	while (current->string[i])
 	{
 		if(current->string[i] == '\n')
 			return (1);
@@ -27,7 +27,7 @@ t_list	*ft_lstlast(t_list *stash)
 	{
 		if(!current->next)
 			return (current);
-		current = current->next;	
+		current = current->next;
 	}
 	return (current);
 }
@@ -54,8 +54,8 @@ void	generate_line(t_list	*stash, char	**list)
 		stash = stash->next;
 	}
 	*list = malloc(sizeof(char) * (len + 1));
-	if (*list == NULL)
-		return; 
+	// if (*list == NULL)
+	// 	return; 
 }
 
 void	free_stash(t_list *stash)
@@ -76,13 +76,10 @@ void	free_stash(t_list *stash)
 int	ft_strlen(const char	*str)
 {
 	int i;
-	int	len;
 	i = 0;
-	len = 0;
 	while (str[i] != '\0')
 	{
-		len++;
 		i++;
 	}
-	return (len);
+	return (i);
 }

@@ -6,10 +6,11 @@
 /*   By: vsergio <vsergio@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 11:01:02 by vsergio           #+#    #+#             */
-/*   Updated: 2022/05/25 17:37:27 by vsergio          ###   ########.fr       */
+/*   Updated: 2022/05/30 16:48:37 by vsergio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
+#include <stdio.h>
 
 char	*get_next_line(int fd)
 {
@@ -18,8 +19,9 @@ char	*get_next_line(int fd)
 	//um loop na chamada da funcao para printar todas as quebras
 	static	t_list	*stash;
 	char			*line;
-	stash = NULL;
-	if(fd < 0 || BUFFER_SIZE <= 0)
+	int		readed;
+	readed = 1;
+	if(fd < 0 || BUFFER_SIZE <= 0 || read(fd, &line, 0) < 0)
 		return (NULL);
 	line = NULL;
 	//1. read from fd and add to the linked list (stash)
@@ -44,9 +46,10 @@ char	*get_next_line(int fd)
 void	read_and_stash(t_list **stash, int fd)
 {
 	char	*buffer;
-	int			readed;
-	readed = 1;	
-	while(!found_newline(*stash) && readed > 0)
+	int		readed;
+
+	readed = 1;
+	while(!found_newline(*stash) && readed != 0)
 	{
 		buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		if (buffer == NULL)
@@ -61,8 +64,9 @@ void	read_and_stash(t_list **stash, int fd)
 		//needs to be readed instead of buffzer_size because if i put
 		//a big buffzer_size like = 10000, and i read only 15 characters
 		//i would allocating more than necessary
-		buffer[readed + 1] = '\0';
+		buffer[readed] = '\0';
 		add_to_stash(stash, buffer, readed);
+		// printf("buffer adicionado: %s\n", buffer);
 		free (buffer);
 	}
 }
@@ -80,6 +84,7 @@ void	add_to_stash(t_list **stash, char *buffer, int readed)
 	new_node->string = malloc(sizeof(t_list) * (readed + 1));
 	if (new_node->string == NULL)
 		return ;
+	new_node->next = NULL;
 	while (buffer[i] != '\0' && i < readed)
 	{
 		new_node->string[i] = buffer[i];
@@ -93,6 +98,7 @@ void	add_to_stash(t_list **stash, char *buffer, int readed)
 	}
 	end_stash = ft_lstlast(*stash);
 	end_stash->next = new_node;
+	// printf("situacao stash: %s\n", new_node->string);
 }
 // extracts all characters from our stash and stores them in out line
 //stopping after the first \n it encounters
@@ -118,7 +124,7 @@ void	extract_line(t_list *stash, char	**line)
 			//final da linha e dar break no codigo, pois queremos apenas
 			//imprimir 1 quebra de linha por linha
 			if (stash->string[i] == '\n')
-			{	*line[j++] = stash->string[i];
+			{	(*line)[j++] = stash->string[i];
 				break;
 			}
 			//nao necessariamente o stash que estou verificando vai ter o \n
@@ -126,11 +132,11 @@ void	extract_line(t_list *stash, char	**line)
 			//resetado caso o stash n encontre o \n, e ai sim ele continuar
 			// da onde parou a ultima vez pra ir incrementando ate encontrar
 			//o \n no stash
-			*line[j++] = stash->string[i++];
+			(*line)[j++] = stash->string[i++];
 		}
 		stash = stash->next;
 	}
-	*line[j] = '\0';
+	(*line)[j] = '\0';
 }
 //after extracting the line that was read, we dont need those characters 
 //anymore, this function clears the stash so only the characters that have
@@ -144,7 +150,7 @@ void	clean_stash(t_list **stash)
 
 	j = 0;
 	new_node = malloc(sizeof(t_list));
-	if (*stash == NULL || new_node == NULL)
+	if (stash == NULL || new_node == NULL)
 		return;
 	last_node = ft_lstlast(*stash);
 	i = 0;
@@ -154,7 +160,13 @@ void	clean_stash(t_list **stash)
 	if(last_node->string && last_node->string[i] == '\n')
 		i++;
 
-	new_node->string = malloc(sizeof(char) * ((ft_strlen(last_node->string) - i)+ 1));
+	new_node->string = malloc(sizeof(char) * ((ft_strlen(last_node->string) - i) + 1));
+	//nesse no limpo, que ira conter apenas o conteudo apos a quebra de linha, devera ser setado o proximo
+	//next dele para NULL, pra quando entrar no loop novamente em busca da proxima quebra, ele ter uma
+	//referencia e saber para onde apontar, pois se for passado um buffer menor que o minimo pra encontrar
+	//o '\n' no primeiro loop, ele ira ficar num loop ate encontrar o '\n', e caso encontre e o buffer sobre conteudo
+	//apos a quebra de linha, esse novo buffer que resta precisa ter setado o proximo para NULL.
+	new_node->next = NULL;
 	if(new_node->string == NULL)
 		return ;
 	//apos fazer o malloc da ultima string do que restou apos a quebra '\n' 

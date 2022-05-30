@@ -4,14 +4,16 @@
 
 int main(void)
 {
-	int fd = open ("ola.txt", O_RDONLY);
-	int i;
+	int fd = open("ola.txt", O_RDONLY);
+	char	*line;
 
-	i = 0; 
-	while (i < 4)
+	while (1)
 	{
-		printf("%s", get_next_line(fd));
-		i++;
+		line = get_next_line(fd);
+		printf("%s", line);
+		if (!line)
+			break;
+		free(line);
 	}
 	return (0);
 }
