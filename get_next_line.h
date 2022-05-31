@@ -16,15 +16,15 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-#ifndef BUFFER_SIZE
+# ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 5
-#endif
+# endif
 
-typedef struct s_list 
+typedef struct s_list
 {
-	char		*string;
-	struct s_list *next;
-}				t_list;
+	char			*string;
+	struct s_list	*next;
+}					t_list;
 
 char	*get_next_line(int fd);
 void	read_and_stash(t_list **stash, int fd);

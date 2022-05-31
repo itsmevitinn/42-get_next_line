@@ -17,17 +17,16 @@ char	*get_next_line(int fd)
 	//a funcao retorna 1 linha a cada vez que eh chamada, se eu passo
 	//um buffer que detecta varias quebras de linha ('\n'), devo fazer
 	//um loop na chamada da funcao para printar todas as quebras
-	static	t_list	*stash;
+	static	t_list	*stash = NULL;
 	char			*line;
-	int		readed;
-	readed = 1;
-	if(fd < 0 || BUFFER_SIZE <= 0 || read(fd, &line, 0) < 0)
+
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	line = NULL;
 	//1. read from fd and add to the linked list (stash)
 	read_and_stash(&stash, fd);
 	//if my stash is equal to NULL, thats because is a empty file
-	if(stash == NULL)
+	if (stash == NULL)
 		return (NULL);
 	//2. extract from the stash to line
 	extract_line(stash, &line);
@@ -49,7 +48,7 @@ void	read_and_stash(t_list **stash, int fd)
 	int		readed;
 
 	readed = 1;
-	while(!found_newline(*stash) && readed != 0)
+	while (!found_newline(*stash) && readed != 0)
 	{
 		buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		if (buffer == NULL)
@@ -66,14 +65,13 @@ void	read_and_stash(t_list **stash, int fd)
 		//i would allocating more than necessary
 		buffer[readed] = '\0';
 		add_to_stash(stash, buffer, readed);
-		// printf("buffer adicionado: %s\n", buffer);
-		free (buffer);
+		free(buffer);
 	}
 }
 // add the content of our buffer to te end of our stash
 void	add_to_stash(t_list **stash, char *buffer, int readed)
 {
-	int i;
+	int		i;
 	t_list	*end_stash;
 	t_list	*new_node;
 
@@ -85,7 +83,7 @@ void	add_to_stash(t_list **stash, char *buffer, int readed)
 	if (new_node->string == NULL)
 		return ;
 	new_node->next = NULL;
-	while (buffer[i] != '\0' && i < readed)
+	while (buffer[i] && i < readed)
 	{
 		new_node->string[i] = buffer[i];
 		i++;
@@ -98,7 +96,6 @@ void	add_to_stash(t_list **stash, char *buffer, int readed)
 	}
 	end_stash = ft_lstlast(*stash);
 	end_stash->next = new_node;
-	// printf("situacao stash: %s\n", new_node->string);
 }
 // extracts all characters from our stash and stores them in out line
 //stopping after the first \n it encounters
@@ -113,19 +110,20 @@ void	extract_line(t_list *stash, char	**line)
 	j = 0;
 	if (*line == NULL)
 		return ;
-	while(stash)
+	while (stash)
 	{
 		i = 0;
 		// se terminou a leitura da stash e nao encontrou o '\n'
 		// ira resetar o indice e buscar na proxima stash o '\n'
-		while(stash->string[i])
+		while (stash->string[i])
 		{
 			//caso encontre o \n, iremos apenas fazer o incremento dele no
 			//final da linha e dar break no codigo, pois queremos apenas
 			//imprimir 1 quebra de linha por linha
 			if (stash->string[i] == '\n')
-			{	(*line)[j++] = stash->string[i];
-				break;
+			{	
+				(*line)[j++] = stash->string[i];
+				break ;
 			}
 			//nao necessariamente o stash que estou verificando vai ter o \n
 			//entao devo ter um indice apenas para o line, para ele n ser
@@ -143,21 +141,21 @@ void	extract_line(t_list *stash, char	**line)
 //not been returned at the end of get_next_line() remain in our static stash
 void	clean_stash(t_list **stash)
 {
-	t_list *new_node;
-	t_list *last_node;
-	int i;
-	int j;
+	t_list	*new_node;
+	t_list	*last_node;
+	int		i;
+	int		j;
 
 	j = 0;
 	new_node = malloc(sizeof(t_list));
 	if (stash == NULL || new_node == NULL)
-		return;
+		return ;
 	last_node = ft_lstlast(*stash);
 	i = 0;
 
-	while(last_node->string[i] && last_node->string[i] != '\n')
+	while (last_node->string[i] && last_node->string[i] != '\n')
 		i++;
-	if(last_node->string && last_node->string[i] == '\n')
+	if (last_node->string && last_node->string[i] == '\n')
 		i++;
 
 	new_node->string = malloc(sizeof(char) * ((ft_strlen(last_node->string) - i) + 1));
@@ -167,11 +165,11 @@ void	clean_stash(t_list **stash)
 	//o '\n' no primeiro loop, ele ira ficar num loop ate encontrar o '\n', e caso encontre e o buffer sobre conteudo
 	//apos a quebra de linha, esse novo buffer que resta precisa ter setado o proximo para NULL.
 	new_node->next = NULL;
-	if(new_node->string == NULL)
+	if (new_node->string == NULL)
 		return ;
 	//apos fazer o malloc da ultima string do que restou apos a quebra '\n' 
 	//agora ira pegar o restante a partir do indice 'i' que sobrou depois da quebra '\n' e incluir no novo node
-	while(last_node->string[i])
+	while (last_node->string[i])
 		new_node->string[j++] = last_node->string[i++];
 	new_node->string[j] = '\0';
 	//tudo que vier antes da stash que foi encontrada a primeira ocorrencia
@@ -182,7 +180,7 @@ void	clean_stash(t_list **stash)
 	//quando a quebra de linha existir na stash, a stash estara no final
 	//pois sempre que uma stash eh adicionada, ela vai pro final da matriz
 	//entao, quando uma eh encontrada, ela sera a ultima
-
+	
 	//logo eu limpo essa stash que havia a '\n', mas eu nao limpo
 	//o que vem anterior dela, pois ao chamar a funcao gnl novamente
 	//preciso saber da onde terminei o retorno da funcao anterior
