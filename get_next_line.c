@@ -6,11 +6,10 @@
 /*   By: vsergio <vsergio@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 11:01:02 by vsergio           #+#    #+#             */
-/*   Updated: 2022/05/30 16:48:37 by vsergio          ###   ########.fr       */
+/*   Updated: 2022/06/01 15:17:34 by vsergio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
-#include <stdio.h>
 
 char	*get_next_line(int fd)
 {
@@ -20,7 +19,7 @@ char	*get_next_line(int fd)
 	static	t_list	*stash = NULL;
 	char			*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read (fd, &line, 0) < 0)
 		return (NULL);
 	line = NULL;
 	//1. read from fd and add to the linked list (stash)

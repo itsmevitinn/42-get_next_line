@@ -6,7 +6,7 @@
 /*   By: vsergio <vsergio@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 10:59:58 by vsergio           #+#    #+#             */
-/*   Updated: 2022/06/01 11:44:33 by vsergio          ###   ########.fr       */
+/*   Updated: 2022/06/01 14:38:03 by vsergio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,16 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-#ifndef BUFFER_SIZE
+# ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 5
-#endif
+# endif
 
-typedef struct s_list 
+typedef struct s_list
 {
-	char		*string;
-	struct s_list *next;
-}				t_list;
+	char			*string;
+	struct s_list	*next;
+	int				fd;
+}					t_list;
 
 char	*get_next_line(int fd);
 void	read_and_stash(t_list **stash, int fd);
