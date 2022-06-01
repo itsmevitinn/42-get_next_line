@@ -6,11 +6,10 @@
 /*   By: vsergio <vsergio@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 11:01:02 by vsergio           #+#    #+#             */
-/*   Updated: 2022/06/01 10:16:15 by vsergio          ###   ########.fr       */
+/*   Updated: 2022/06/01 11:44:22 by vsergio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line_bonus.h"
-#include <stdio.h>
 
 char	*get_next_line(int fd)
 {
@@ -66,7 +65,6 @@ void	read_and_stash(t_list **stash, int fd)
 		//i would allocating more than necessary
 		buffer[readed] = '\0';
 		add_to_stash(stash, buffer, readed);
-		// printf("buffer adicionado: %s\n", buffer);
 		free (buffer);
 	}
 }
