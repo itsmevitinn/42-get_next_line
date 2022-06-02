@@ -6,7 +6,7 @@
 /*   By: vsergio <vsergio@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 11:01:02 by vsergio           #+#    #+#             */
-/*   Updated: 2022/06/01 15:17:34 by vsergio          ###   ########.fr       */
+/*   Updated: 2022/06/02 15:01:57 by vsergio          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
@@ -14,8 +14,9 @@
 char	*get_next_line(int fd)
 {
 	//a funcao retorna 1 linha a cada vez que eh chamada, se eu passo
-	//um buffer que detecta varias quebras de linha ('\n'), devo fazer
-	//um loop na chamada da funcao para printar todas as quebras
+	//um buffer que detecta varias quebras de linha ('\n'), ele printa
+	//a primeira quebra e armazena o restante para a proxima chamada
+
 	static	t_list	*stash = NULL;
 	char			*line;
 
@@ -170,21 +171,16 @@ void	clean_stash(t_list **stash)
 	//agora ira pegar o restante a partir do indice 'i' que sobrou depois da quebra '\n' e incluir no novo node
 	while (last_node->string[i])
 		new_node->string[j++] = last_node->string[i++];
+	//caso nao exista conteudo apos a quebra de linha no last_node pra ser armazenado no new_node
+	//ele ira ignorar o while, colocar o nulo e jogar direto na stash apos limpa-l
 	new_node->string[j] = '\0';
-	//tudo que vier antes da stash que foi encontrada a primeira ocorrencia
-	// da '\n', podera ser limpo, restando apenas o que vem apos a '\n'
-	//pois podera servir pra complementar o proximo print de linha
 	free_stash(*stash);
 	*stash = new_node;
 	//quando a quebra de linha existir na stash, a stash estara no final
 	//pois sempre que uma stash eh adicionada, ela vai pro final da matriz
 	//entao, quando uma eh encontrada, ela sera a ultima
 	
-	//logo eu limpo essa stash que havia a '\n', mas eu nao limpo
-	//o que vem anterior dela, pois ao chamar a funcao gnl novamente
-	//preciso saber da onde terminei o retorno da funcao anterior
-	//para dar segmento, atraves da static stash
 
 	//ao chamar a funcao novamente, como ele pula o que ja foi printado?
-	//atraves da funcao read? ja grava onde parou a ultima lida?
+	//atraves da funcao read, o cursor ira parar na ultima lida do buffer
 }

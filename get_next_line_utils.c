@@ -55,8 +55,8 @@ void	generate_line(t_list	*stash, char	**list)
 		stash = stash->next;
 	}
 	*list = malloc(sizeof(char) * (len + 1));
-	// if (*list == NULL)
-	// 	return; 
+	if (*list == NULL)
+		return;
 }
 
 void	free_stash(t_list *stash)
