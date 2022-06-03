@@ -1,5 +1,4 @@
 #include "get_next_line_bonus.h"
-//looks for a newline in the given linked listg
 
 int	found_newline(t_list	*stash)
 {
@@ -55,8 +54,8 @@ void	generate_line(t_list	*stash, char	**list)
 		stash = stash->next;
 	}
 	*list = malloc(sizeof(char) * (len + 1));
-	// if (*list == NULL)
-	// 	return; 
+	if (*list == NULL)
+		return ;
 }
 
 void	free_stash(t_list *stash)
